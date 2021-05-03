@@ -8,7 +8,7 @@ class CreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = (
-            "name",
+            "first_name",
             "username",
             "email",
             "password",
