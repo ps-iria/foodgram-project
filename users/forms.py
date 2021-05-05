@@ -11,5 +11,5 @@ class CreationForm(UserCreationForm):
             "first_name",
             "username",
             "email",
-            "password",
+            "password1",
         )

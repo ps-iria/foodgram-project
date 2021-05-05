@@ -34,6 +34,10 @@ class Recipe(models.Model):
         verbose_name='Название',
         unique=True,
     )
+    pub_date = models.DateTimeField(
+        verbose_name="Дата/Время создания",
+        auto_now_add=True
+    )
     image = models.ImageField(
         upload_to='recipes/',
         blank=True,
