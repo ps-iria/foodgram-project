@@ -8,7 +8,6 @@ class Ingredient(models.Model):
     tittle = models.CharField(
         max_length=250,
         verbose_name='Название',
-        unique=True,
     )
     unit = models.CharField(
         max_length=250,
@@ -17,6 +16,11 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return f'{self.tittle}, {self.unit}'
+
+    class Meta:
+        ordering = ('tittle',)
+        verbose_name = 'Ингридиент'
+        verbose_name_plural = 'Ингридиенты'
 
 
 class Recipe(models.Model):
@@ -65,6 +69,11 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.tittle
+
+    class Meta:
+        ordering = ('tittle',)
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
 
 class RecipeIngredient(models.Model):

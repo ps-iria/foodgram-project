@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Recipe, RecipeIngredient, Ingredient
+from recipes.models import Recipe, RecipeIngredient, Ingredient
 
 
 class RecipeAdmin(admin.ModelAdmin):
@@ -15,14 +15,13 @@ class RecipeAdmin(admin.ModelAdmin):
         'tittle',
     )
     list_filter = (
-        'tittle',
+        'tag',
     )
     empty_value_display = '-пусто-'
 
 
 class IngredientAdmin(admin.ModelAdmin):
     list_display = (
-        'pk',
         'tittle',
         'unit'
 
@@ -31,7 +30,7 @@ class IngredientAdmin(admin.ModelAdmin):
         'tittle',
     )
     list_filter = (
-        'tittle',
+        'unit',
     )
     empty_value_display = '-пусто-'
 
