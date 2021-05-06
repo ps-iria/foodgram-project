@@ -3,7 +3,14 @@ from django.contrib import admin
 from recipes.models import Recipe, RecipeIngredient, Ingredient
 
 
+class RecipeIngredientInline(admin.TabularInline):
+    model = RecipeIngredient
+    extra = 1
+    raw_id_fields = ('ingredient',)
+
+
 class RecipeAdmin(admin.ModelAdmin):
+    inlines = [RecipeIngredientInline, ]
     list_display = (
         'pk',
         'tittle',
@@ -17,6 +24,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = (
         'tag',
     )
+    prepopulated_fields = {'slug': ('tittle',)}
     empty_value_display = '-пусто-'
 
 
