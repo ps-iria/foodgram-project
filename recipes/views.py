@@ -52,7 +52,7 @@ def RecipeNew(request):
     # save_recipe(request, form)
     recipe = form.save(commit=False)
     recipe.author = request.user
-    recipe.slug = slugify(form.cleaned_data['tittle'])
+    recipe.slug = slugify(form.cleaned_data['title'])
     recipe.save()
     return redirect("index")
 

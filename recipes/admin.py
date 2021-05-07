@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from recipes.models import Recipe, RecipeIngredient, Ingredient
+from recipes.forms import TagForm
+from recipes.models import Recipe, RecipeIngredient, Ingredient, Tag
 
 
 class RecipeIngredientInline(admin.TabularInline):
@@ -9,33 +10,35 @@ class RecipeIngredientInline(admin.TabularInline):
     raw_id_fields = ('ingredient',)
 
 
+# class RecipeTagInline(admin.TabularInline):
+#     model = RecipeIngredient
+#     extra = 1
+#     raw_id_fields = ('ingredient',)
+
+
 class RecipeAdmin(admin.ModelAdmin):
     inlines = [RecipeIngredientInline, ]
     list_display = (
         'pk',
-        'tittle',
+        'title',
         'author',
-        'tag',
         'slug',
     )
     search_fields = (
-        'tittle',
+        'title',
     )
-    list_filter = (
-        'tag',
-    )
-    prepopulated_fields = {'slug': ('tittle',)}
+    prepopulated_fields = {'slug': ('title',)}
     empty_value_display = '-пусто-'
 
 
 class IngredientAdmin(admin.ModelAdmin):
     list_display = (
-        'tittle',
+        'title',
         'unit'
 
     )
     search_fields = (
-        'tittle',
+        'title',
     )
     list_filter = (
         'unit',
@@ -43,6 +46,15 @@ class IngredientAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
+class TagAdmin(admin.ModelAdmin):
+    form = TagForm
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'display_name', 'color',)
+            }),
+        )
+
+admin.site.register(Tag, TagAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(RecipeIngredient)
 admin.site.register(Ingredient, IngredientAdmin)

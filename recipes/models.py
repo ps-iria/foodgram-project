@@ -6,7 +6,7 @@ User = get_user_model()
 
 
 class Ingredient(models.Model):
-    tittle = models.CharField(
+    title = models.CharField(
         max_length=250,
         verbose_name='Название',
     )
@@ -16,10 +16,10 @@ class Ingredient(models.Model):
     )
 
     def __str__(self):
-        return f'{self.tittle}, {self.unit}'
+        return f'{self.title}, {self.unit}'
 
     class Meta:
-        ordering = ('tittle',)
+        ordering = ('title',)
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
 
@@ -30,7 +30,7 @@ class Recipe(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Автор',
     )
-    tittle = models.CharField(
+    title = models.CharField(
         max_length=250,
         verbose_name='Название рецепта',
         unique=True,
@@ -55,14 +55,10 @@ class Recipe(models.Model):
         through='RecipeIngredient',
         verbose_name='Ингридиенты',
     )
-    TAGS = [
-            ('завтрак', 'завтрак'),
-            ('обед', 'обед'),
-            ('ужин', 'ужин'),
-        ]
-    tag = models.CharField(
-        max_length=7,
-        choices=TAGS,
+    tags = models.ManyToManyField(
+        'Tag',
+        related_name="recipes",
+        verbose_name="Теги",
     )
     cook_time = models.PositiveIntegerField(
         verbose_name='Время приготовления',
@@ -73,13 +69,13 @@ class Recipe(models.Model):
     )
 
     def __str__(self):
-        return self.tittle
+        return self.title
 
     def get_absolute_url(self):
         return reverse('recipe_detail', kwargs={'slug': self.slug})
 
     class Meta:
-        ordering = ('tittle',)
+        ordering = ('title',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -88,3 +84,32 @@ class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     count = models.PositiveIntegerField()
+
+
+class Tag(models.Model):
+    class Meal(models.TextChoices):
+        BREAKFAST = "Завтрак"
+        LUNCH = "Обед"
+        DINNER = "Ужин"
+
+    title = models.CharField(
+        verbose_name="Название",
+        max_length=50,
+        choices=Meal.choices,
+        unique=True
+    )
+    display_name = models.CharField(
+        verbose_name="Имя тега в шаблоне",
+        max_length=20,
+    )
+    color = models.CharField(
+        verbose_name="Цвет тега",
+        max_length=20,
+    )
+
+    class Meta:
+        verbose_name = "Тег"
+        verbose_name_plural = "Теги"
+
+    def __str__(self):
+        return self.display_name
