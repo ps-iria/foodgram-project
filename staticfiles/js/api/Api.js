@@ -62,7 +62,7 @@ class Api {
       })
   }
   addSubscriptions(id) {
-    return fetch(`${this.apiUrl}/subscriptions/`, {
+    return fetch(`${this.apiUrl}/subscriptions`, {
       method: 'POST',
       headers: this.headers,
       body: JSON.stringify({
@@ -89,7 +89,7 @@ class Api {
       })
   }
   addFavorites (id)  {
-    return fetch(`${this.apiUrl}/favorites/`, {
+    return fetch(`${this.apiUrl}/favorites`, {
       method: 'POST',
       headers: this.headers,
       body: JSON.stringify({
