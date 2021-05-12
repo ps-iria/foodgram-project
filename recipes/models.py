@@ -10,13 +10,13 @@ class Ingredient(models.Model):
         max_length=250,
         verbose_name='Название',
     )
-    unit = models.CharField(
+    dimension = models.CharField(
         max_length=250,
         verbose_name='Единицы измерения',
     )
 
     def __str__(self):
-        return f'{self.title}, {self.unit}'
+        return f'{self.title}, {self.dimension}'
 
     class Meta:
         ordering = ('title',)
@@ -28,6 +28,7 @@ class Recipe(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='recipes',
         verbose_name='Автор',
     )
     title = models.CharField(
@@ -75,15 +76,26 @@ class Recipe(models.Model):
         return reverse('recipe_detail', kwargs={'slug': self.slug})
 
     class Meta:
-        ordering = ('title',)
+        ordering = ('-pub_date',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
 
 class RecipeIngredient(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name="counts",
+    )
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        related_name="numbers",
+    )
     count = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f'{self.ingredient} - {self.count}'
 
 
 class Tag(models.Model):
@@ -105,6 +117,11 @@ class Tag(models.Model):
     color = models.CharField(
         verbose_name="Цвет тега",
         max_length=20,
+    )
+    background_color = models.CharField(
+        verbose_name="Цвет фона тега",
+        max_length=20,
+        default="#000000"
     )
 
     class Meta:

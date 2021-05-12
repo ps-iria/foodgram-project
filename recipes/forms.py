@@ -7,11 +7,20 @@ from recipes.models import Recipe, Tag
 class CreateRecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
-        exclude = (
-            'author',
-            'slug'
+        # exclude = (
+        #     'author',
+        #     'slug'
+        # )
+        fields = (
+            "title",
+            "tags",
+            "cook_time",
+            "description",
+            "image"
         )
-        fields = '__all__'
+        widgets = {
+            "tags": forms.CheckboxSelectMultiple()
+        }
 
 
 class TagForm(forms.ModelForm):
@@ -20,4 +29,5 @@ class TagForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'color': TextInput(attrs={'type': 'color'}),
+            'background_color': TextInput(attrs={'type': 'color'}),
         }

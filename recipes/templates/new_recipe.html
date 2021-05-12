@@ -4,20 +4,24 @@
     Создание рецепта
 {% endblock %}
 {% block css %}
-    {% static "pages/form.css" %}
+<link rel="stylesheet" href='{% static "pages/form.css" %}'>
 {% endblock %}
 {% block content %}
   {% load user_filters %}
 <main class="main container">
 	<div class="main__header">
-		<h1 class="main__title">Создание рецепта</h1>
+		{% if recipe %}
+			<h1 class="main__title">Редактирование рецепта</h1>
+		{% else %}
+			<h1 class="main__title">Создание рецепта</h1>
+		{% endif %}
 	</div>
 	<div class="form-container">
 		<form
 					class="form"
 					method="post"
 					enctype="multipart/form-data"
-					action="{% if recipe %}{% url 'recipe_edit' user.username recipe.pk %}{% else %}{% url 'recipe_new' %}{% endif %}"
+					action="{% if recipe %}{% url 'recipe_edit' recipe.pk %}{% else %}{% url 'recipe_new' %}{% endif %}"
 		>
 			{% csrf_token %}
 
@@ -36,7 +40,7 @@
 				<div class="form__field-group">
 					<div class="tags">
 						{% if recipe %}
-							{% for tag in tag_list %}
+							{% for tag in form.fields.tags.choices.queryset %}
 								<div class="tags__item">
 									<input type="checkbox" style="color: {{ tag.color }}" name="tags" value="{{ tag.id }}" id="id_{{ tag.title }}"
 										class="tags__checkbox tags__checkbox_style_{{ tag.color }}" {% if tag in recipe.tags.all %}checked{% endif %}>
@@ -64,14 +68,24 @@
 				<div class="form__field-group">
 					<div class="form__field-group-ingredientes">
 						<div class="form__dropdown">
-							{{ form.ingredient|add_class:'form__input' }}
+							<input type="text" id="nameIngredient" class="form__input">
 							<div class="form__dropdown-items"></div>
 						</div>
 						<input type="number" id="cantidad" class="form__input" min="0">
 						<label for="cantidad" class="form__label" id="cantidadVal">шт.</label>
 					</div>
 					<div class="form__field-group-ingredientes-container">
-
+						{% if recipe %}
+							{% for ingredient in recipe.counts.all %}
+								<div class="form__field-item-ingredient" id="ing_{{ forloop.counter }}">
+									<span> {{ ingredient }}</span>
+									<span class="form__field-item-delete"></span>
+									<input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}" type="hidden" value="{{ ingredient.ingredient.title }}">
+									<input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_{{ forloop.counter }}" type="hidden" value="{{ ingredient.count }}">
+									<input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_{{ forloop.counter }}" type="hidden" value="{{ ingredient.ingredient.dimension }}">
+								</div>
+							{% endfor %}
+						{% endif %}
 					</div>
 					<span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
 					{% if form.ingredient.errors %}
