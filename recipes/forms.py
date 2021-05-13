@@ -29,5 +29,4 @@ class TagForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'color': TextInput(attrs={'type': 'color'}),
-            'background_color': TextInput(attrs={'type': 'color'}),
         }

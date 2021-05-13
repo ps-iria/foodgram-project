@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
 from api.models import Follow, Favorite
-from recipes.models import Ingredient
+from recipes.models import Ingredient, Recipe
 
 User = get_user_model()
 
@@ -19,15 +19,18 @@ class FollowSerializer(serializers.ModelSerializer):
                           slug_field='id',
                           source='author')
 
+    user = User.pk
+
     class Meta:
         fields = ('id',)
         model = Follow
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    id = SlugRelatedField(queryset=User.objects.all(),
+    id = SlugRelatedField(queryset=Recipe.objects.all(),
                           slug_field='id',
-                          source='author')
+                          source='recipe')
+    user = User.pk
 
     class Meta:
         fields = ('id',)

@@ -118,11 +118,6 @@ class Tag(models.Model):
         verbose_name="Цвет тега",
         max_length=20,
     )
-    background_color = models.CharField(
-        verbose_name="Цвет фона тега",
-        max_length=20,
-        default="#000000"
-    )
 
     class Meta:
         verbose_name = "Тег"

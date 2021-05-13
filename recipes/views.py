@@ -203,3 +203,7 @@ def profile(request, username):
     # context['title'] = author.get_full_name()
     # context['author'] = author
     # return render(request, 'index.html', context)
+
+
+def purchase_page():
+    return None

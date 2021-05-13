@@ -40,7 +40,7 @@
         <ul class="single-card__items">
 
             {% for tag in recipe.tags.all %}
-                <li class="single-card__item" ><span style="background: {{ tag.background_color|hex_to_rgb }};color: {{ tag.color }}" class="badge">{{ tag.title }}</span></li>
+                <li class="single-card__item" ><span style="background: {{ tag.color|hex_to_rgb }};color: {{ tag.color }}" class="badge">{{ tag.title }}</span></li>
             {% endfor %}
 
         </ul>

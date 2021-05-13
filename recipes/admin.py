@@ -54,7 +54,7 @@ class TagAdmin(admin.ModelAdmin):
     form = TagForm
     fieldsets = (
         (None, {
-            'fields': ('title', 'display_name', 'color', 'background_color',)
+            'fields': ('title', 'display_name', 'color',)
             }),
         )
 

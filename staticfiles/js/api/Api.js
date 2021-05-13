@@ -62,7 +62,7 @@ class Api {
       })
   }
   addSubscriptions(id) {
-    return fetch(`${this.apiUrl}/subscriptions`, {
+    return fetch(`${this.apiUrl}/follows`, {
       method: 'POST',
       headers: this.headers,
       body: JSON.stringify({
@@ -77,7 +77,7 @@ class Api {
       })
   }
   removeSubscriptions (id) {
-    return fetch(`${this.apiUrl}/subscriptions/${id}`, {
+    return fetch(`${this.apiUrl}/follows/${id}`, {
       method: 'DELETE',
       headers: this.headers,
     })
