@@ -4,10 +4,10 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from api.models import Follow, Favorite
+from api.models import Follow, Favorite, Purchase
 from api.serializers import IngredientSerializer, FollowSerializer, \
     FavoriteSerializer
-from recipes.models import Ingredient
+from recipes.models import Ingredient, Recipe
 
 
 class IngredientsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -66,19 +66,30 @@ class FavoritesViewSet(CreateDeleteViewSet):
 @api_view(['POST'])
 def add_purchase(request):
     recipe_id = request.data.get('id')
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
     if recipe_id is None:
+
         return Response(
             {
                 'success': False
             },
             status=status.HTTP_404_NOT_FOUND
         )
+    # print(recipe_id)
+    purchase = Purchase.objects.get_or_create(
+        user=request.user, recipe=recipe
+    )
+    if not purchase:
+        return Response({'success': False})
     return Response(data={'success': True},
                     status=status.HTTP_200_OK)
 
 
 @api_view(['DELETE'])
 def delete_purchase(request, id):
-
+    # Purchase.objects.filter(user=request.user,
+    #                         recipe_id=id).delete()
+    print(Purchase.objects.filter(user=request.user,
+                            recipe_id=id))
     return Response(data={'success': True},
                     status=status.HTTP_200_OK)

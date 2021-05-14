@@ -12,6 +12,7 @@ from django.views.generic import DetailView, ListView
 from recipes import services
 from recipes.forms import CreateRecipeForm
 from recipes.models import Recipe, Ingredient, RecipeIngredient, Tag
+from api.models import Purchase
 
 User = get_user_model()
 TAGS = ["Завтрак", "Обед", "Ужин"]
@@ -205,5 +206,29 @@ def profile(request, username):
     # return render(request, 'index.html', context)
 
 
-def purchase_page():
+def purchase(request):
+    recipes = Purchase.objects.filter(
+            user=request.user
+            )
+    # print(recipes)
+    return render(
+        request,
+        'shop_cart.html',
+        {
+            'recipes': recipes,
+            }
+    )
+
+
+def delete_purchase(request, recipe_id):
+
+    Purchase.objects.get(id=recipe_id).delete()
+    # recipes = Purchase.objects.filter(user=request.user)
+    # return render(request, 'shop_cart.html', {
+    #     'recipes': recipes,
+    # })
+    return redirect('purchase')
+
+
+def download_purchase():
     return None
