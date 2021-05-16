@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, \
     InvalidPage
 from django.db import transaction, IntegrityError
+from django.db.models import Sum
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from pytils.translit import slugify
@@ -232,13 +233,20 @@ def delete_purchase(request, recipe_id):
 
 def download_purchase(request):
     content = ''
-    ingredients = RecipeIngredient.objects.filter(
-        recipe__in=Recipe.objects.filter(
-            purchase__user=request.user
-        )
-    )
+    # ingredients = RecipeIngredient.objects.filter(
+    #     recipe__in=Recipe.objects.filter(
+    #         purchase__user=request.user
+    #     )
+    # )
+    recipes = Recipe.objects.filter(purchase__user=request.user)
+    ingredients = recipes.order_by('ingredient__title').values(
+        'ingredient__title',
+        'ingredient__dimension').annotate(
+        total_count=Sum('counts__count'))
+    # print(recipes)
     for ingredient in ingredients:
-        content += f'{ingredient}' + '\n'
+        ingredient_str = f'{ingredient["ingredient__title"]} - {ingredient["total_count"]} {ingredient["ingredient__dimension"]}'
+        content += f'{ingredient_str}' + '\n'
     filename = 'recipe_ingredients.txt'
     response = HttpResponse(content=content, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename={filename}'
