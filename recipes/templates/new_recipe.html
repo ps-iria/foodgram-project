@@ -126,7 +126,10 @@
 			</div>
 
 			<div class="form__footer">
-					<button type="submit" class="button button_style_blue">Создать рецепт</button>
+				<button type="submit" class="button button_style_blue">Создать рецепт</button>
+				{% if recipe %}
+				<a style="margin-left: 2.5em" href="#" class="form__ingredient-link">Удалить</a>
+				{% endif %}
 			</div>
 		</form>
 	</div>

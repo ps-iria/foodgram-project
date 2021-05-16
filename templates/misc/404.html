@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Ошибка 404{% endblock %}
+
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'pages/single.css' %}">
+{% endblock %}
+
+{% block content %}
+    <main class="main container">
+			<div class="main__header">
+				<h1 class="main__title">Ошибка 404</h1>
+			</div>
+			<div class="form-container">
+				<p class="form__info-text">Страница <code>{{ path }}</code> не найдена
+				<br><br>
+				<a class="link" href="{% url  'index' %}">Вернуться на главную</a></p>
+			</div>
+    </main>
+{% endblock %}
