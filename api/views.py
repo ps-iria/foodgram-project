@@ -76,6 +76,11 @@ def add_purchase(request):
             status=status.HTTP_404_NOT_FOUND
         )
     # print(recipe_id)
+    recipes = request.session.get('recipe_ids')
+    if not recipes:
+        recipes = []
+    recipes.append(recipe_id)
+    request.session['recipe_ids'] = recipes
     purchase = Purchase.objects.get_or_create(
         user=request.user, recipe=recipe
     )
@@ -87,9 +92,19 @@ def add_purchase(request):
 
 @api_view(['DELETE'])
 def delete_purchase(request, id):
-    # Purchase.objects.filter(user=request.user,
-    #                         recipe_id=id).delete()
-    print(Purchase.objects.filter(user=request.user,
-                            recipe_id=id))
+    purchase = Purchase.objects.filter(user=request.user,
+                            recipe_id=id).delete()
+    if not purchase:
+        return Response({'success': False})
+    try:
+        recipes = request.session['recipe_ids']
+    except KeyError:
+        return Response(data={'success': False},
+                        status=status.HTTP_404_NOT_FOUND)
+    if id not in recipes:
+        return Response(data={'success': False},
+                        status=status.HTTP_404_NOT_FOUND)
+    recipes.remove(id)
+    request.session['recipe_ids'] = recipes
     return Response(data={'success': True},
                     status=status.HTTP_200_OK)
