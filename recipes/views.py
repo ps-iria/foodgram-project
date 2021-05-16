@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, \
     InvalidPage
 from django.db import transaction, IntegrityError
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from pytils.translit import slugify
 from django.views.decorators.cache import cache_page
@@ -12,7 +12,7 @@ from django.views.generic import DetailView, ListView
 from recipes import services
 from recipes.forms import CreateRecipeForm
 from recipes.models import Recipe, Ingredient, RecipeIngredient, Tag
-from api.models import Purchase
+from api.models import Purchase, Follow
 
 User = get_user_model()
 TAGS = ["Завтрак", "Обед", "Ужин"]
@@ -39,7 +39,7 @@ def RecipeList(request):
     if active_tags:
         queryset = filter_by_tags(queryset, active_tags)
 
-    paginator = Paginator(queryset, 10)
+    paginator = Paginator(queryset, 6)
     page_number = request.GET.get('page')
     page = pagination(paginator, page_number)
     tags = Tag.objects.all()
@@ -185,7 +185,7 @@ def profile(request, username):
     if active_tags:
         queryset = filter_by_tags(queryset, active_tags)
 
-    paginator = Paginator(queryset, 10)
+    paginator = Paginator(queryset, 6)
     page_number = request.GET.get('page')
     page = pagination(paginator, page_number)
     tags = Tag.objects.all()
@@ -230,5 +230,62 @@ def delete_purchase(request, recipe_id):
     return redirect('purchase')
 
 
-def download_purchase():
-    return None
+def download_purchase(request):
+    content = ''
+    ingredients = RecipeIngredient.objects.filter(
+        recipe__in=Recipe.objects.filter(
+            purchase__user=request.user
+        )
+    )
+    for ingredient in ingredients:
+        content += f'{ingredient}' + '\n'
+    filename = 'recipe_ingredients.txt'
+    response = HttpResponse(content=content, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    return response
+
+
+# @cache_page(20)
+def follow_list(request):
+    queryset = request.user.follower.all()
+    # active_tags = get_active_tags(request)
+    # if active_tags:
+    #     queryset = filter_by_tags(queryset, active_tags)
+
+    paginator = Paginator(queryset, 6)
+    page_number = request.GET.get('page')
+    page = pagination(paginator, page_number)
+    # tags = Tag.objects.all()
+    return render(
+        request,
+        "follow.html",
+        {
+            "page": page,
+            # "tags": tags,
+            "paginator": paginator,
+            # 'active_tags': active_tags,
+        }
+    )
+
+
+# @cache_page(20)
+def favorite_list(request):
+    queryset = Recipe.objects.filter(favorite__user=request.user)
+    active_tags = get_active_tags(request)
+    if active_tags:
+        queryset = filter_by_tags(queryset, active_tags)
+
+    paginator = Paginator(queryset, 6)
+    page_number = request.GET.get('page')
+    page = pagination(paginator, page_number)
+    tags = Tag.objects.all()
+    return render(
+        request,
+        "favorite.html",
+        {
+            "page": page,
+            "tags": tags,
+            "paginator": paginator,
+            'active_tags': active_tags,
+        }
+    )
