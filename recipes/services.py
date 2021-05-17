@@ -1,9 +1,51 @@
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, \
+    InvalidPage
 from django.db import transaction, IntegrityError
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from pytils.translit import slugify
 
-from recipes.models import Ingredient, RecipeIngredient
+from recipes.models import Ingredient, RecipeIngredient, Tag
+
+TAGS = ["Завтрак", "Обед", "Ужин"]
+
+
+def get_active_tags(request):
+    """Получить список активных тегов для фильтрации рецептов"""
+    tags = set()
+    if 'tags' in request.GET:
+        tags = set(request.GET.getlist('tags'))
+        tags.intersection_update(set(TAGS))
+    return tags
+
+
+def get_content(request, queryset):
+    active_tags = get_active_tags(request)
+    if active_tags:
+        queryset = filter_by_tags(queryset, active_tags)
+
+    paginator = Paginator(queryset, 6)
+    page_number = request.GET.get('page')
+    page = pagination(paginator, page_number)
+    tags = Tag.objects.all()
+    return {
+        "page": page,
+        "tags": tags,
+        "paginator": paginator,
+        'active_tags': active_tags,
+    }
+
+
+def pagination(paginator, page_number):
+    try:
+        page = paginator.page(page_number)
+    except PageNotAnInteger:
+        page = paginator.page(1)
+    except EmptyPage:
+        page = paginator.page(paginator.num_pages)
+    except InvalidPage:
+        page = paginator.page(1)
+    return page
 
 
 def filter_by_tags(recipes, tags):

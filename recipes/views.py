@@ -17,55 +17,21 @@ from recipes.forms import CreateRecipeForm
 from recipes.models import Recipe, RecipeIngredient, Tag
 
 User = get_user_model()
-TAGS = ["Завтрак", "Обед", "Ужин"]
-
-
-def get_active_tags(request):
-    """Получить список активных тегов для фильтрации рецептов"""
-    tags = set()
-    if 'tags' in request.GET:
-        tags = set(request.GET.getlist('tags'))
-        tags.intersection_update(set(TAGS))
-    return tags
 
 
 # @cache_page(20)
-def RecipeList(request):
+def recipe_list(request):
     queryset = Recipe.objects.all()
-    active_tags = get_active_tags(request)
-    if active_tags:
-        queryset = services.filter_by_tags(queryset, active_tags)
-
-    paginator = Paginator(queryset, 6)
-    page_number = request.GET.get('page')
-    page = pagination(paginator, page_number)
-    tags = Tag.objects.all()
+    content = services.get_content(request, queryset)
     return render(
         request,
         "index.html",
-        {
-            "page": page,
-            "tags": tags,
-            "paginator": paginator,
-            'active_tags': active_tags,
-        }
+        content
     )
 
 
-def pagination(paginator, page_number):
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
-    except InvalidPage:
-        page = paginator.page(1)
-    return page
-
-
 @login_required()
-def RecipeNew(request):
+def recipe_new(request):
     form = CreateRecipeForm(request.POST or None, files=request.FILES or None)
     if not form.is_valid():
         return render(
@@ -75,16 +41,10 @@ def RecipeNew(request):
                 'form': form,
             }
         )
-
-    # save_recipe(request, form)
     ingredients = services.get_ingredients(request)
     context = services.validate_ingredients(form, ingredients)
     if context:
         return render(request, 'new_recipe.html', context)
-    # recipe = form.save(commit=False)
-    # recipe.author = request.user
-    # recipe.slug = slugify(form.cleaned_data['title'])
-    # recipe.save()
     services.save_recipe(request, form, ingredients)
     return redirect("index")
 
@@ -161,29 +121,13 @@ def recipe_delete(request, recipe_id):
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     queryset = author.recipes.all()
-    active_tags = get_active_tags(request)
-    if active_tags:
-        queryset = services.filter_by_tags(queryset, active_tags)
-
-    paginator = Paginator(queryset, 6)
-    page_number = request.GET.get('page')
-    page = pagination(paginator, page_number)
-    tags = Tag.objects.all()
+    content = services.get_content(request, queryset)
+    content["author"] = author
     return render(
         request,
         "profile.html",
-        {
-            "page": page,
-            "tags": tags,
-            "author": author,
-            "paginator": paginator,
-            'active_tags': active_tags,
-        }
+        content
     )
-    # context = services.get_context(request, recipes_list)
-    # context['title'] = author.get_full_name()
-    # context['author'] = author
-    # return render(request, 'index.html', context)
 
 
 def purchase(request):
@@ -272,7 +216,7 @@ def follow_list(request):
 
     paginator = Paginator(queryset, 6)
     page_number = request.GET.get('page')
-    page = pagination(paginator, page_number)
+    page = services.pagination(paginator, page_number)
     # tags = Tag.objects.all()
     return render(
         request,
@@ -290,21 +234,9 @@ def follow_list(request):
 @login_required()
 def favorite_list(request):
     queryset = Recipe.objects.filter(favorite__user=request.user)
-    active_tags = get_active_tags(request)
-    if active_tags:
-        queryset = services.filter_by_tags(queryset, active_tags)
-
-    paginator = Paginator(queryset, 6)
-    page_number = request.GET.get('page')
-    page = pagination(paginator, page_number)
-    tags = Tag.objects.all()
+    content = services.get_content(request, queryset)
     return render(
         request,
         "favorite.html",
-        {
-            "page": page,
-            "tags": tags,
-            "paginator": paginator,
-            'active_tags': active_tags,
-        }
+        content
     )
