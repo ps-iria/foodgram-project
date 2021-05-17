@@ -1,3 +1,5 @@
+from io import BytesIO
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, \
@@ -6,14 +8,13 @@ from django.db import transaction, IntegrityError
 from django.db.models import Sum
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from pytils.translit import slugify
-from django.views.decorators.cache import cache_page
-from django.views.generic import DetailView, ListView
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfbase import pdfmetrics, ttfonts
+from reportlab.pdfgen import canvas
 
 from recipes import services
 from recipes.forms import CreateRecipeForm
-from recipes.models import Recipe, Ingredient, RecipeIngredient, Tag
-from api.models import Purchase, Follow
+from recipes.models import Recipe, RecipeIngredient, Tag
 
 User = get_user_model()
 TAGS = ["Завтрак", "Обед", "Ужин"]
@@ -28,17 +29,12 @@ def get_active_tags(request):
     return tags
 
 
-def filter_by_tags(recipes, tags):
-    """Отфильтровать рецепты по тегам"""
-    return recipes.filter(tags__title__in=tags).distinct()
-
-
 # @cache_page(20)
 def RecipeList(request):
     queryset = Recipe.objects.all()
     active_tags = get_active_tags(request)
     if active_tags:
-        queryset = filter_by_tags(queryset, active_tags)
+        queryset = services.filter_by_tags(queryset, active_tags)
 
     paginator = Paginator(queryset, 6)
     page_number = request.GET.get('page')
@@ -68,6 +64,7 @@ def pagination(paginator, page_number):
     return page
 
 
+@login_required()
 def RecipeNew(request):
     form = CreateRecipeForm(request.POST or None, files=request.FILES or None)
     if not form.is_valid():
@@ -90,22 +87,6 @@ def RecipeNew(request):
     # recipe.save()
     services.save_recipe(request, form, ingredients)
     return redirect("index")
-
-
-@login_required()
-def new_recipe(request):
-    form = CreateRecipeForm(request.POST or None, files=request.FILES or None)
-    if form.is_valid():
-        ingredients = services.get_ingredients(request)
-
-        context = services.validate_ingredients(form, ingredients)
-        if context:
-            return render(request, 'new_recipe.html', context)
-
-        form.save_recipe(request, ingredients)
-        return redirect('index')
-
-    return render(request, 'new_recipe.html', {'form': form})
 
 
 def recipe(request, recipe_id):
@@ -163,8 +144,6 @@ def recipe_edit(request, recipe_id):
         # form.save_recipe(request)
         services.save_recipe(request, form, ingredients)
         return redirect('index')
-
-    print(form)
     return render(request, 'new_recipe.html', {'form': form,
                                                'recipe': recipe}
                   )
@@ -184,7 +163,7 @@ def profile(request, username):
     queryset = author.recipes.all()
     active_tags = get_active_tags(request)
     if active_tags:
-        queryset = filter_by_tags(queryset, active_tags)
+        queryset = services.filter_by_tags(queryset, active_tags)
 
     paginator = Paginator(queryset, 6)
     page_number = request.GET.get('page')
@@ -208,22 +187,29 @@ def profile(request, username):
 
 
 def purchase(request):
-    recipes = Purchase.objects.filter(
-            user=request.user
-            )
+    if request.user.is_authenticated:
+        recipes = Recipe.objects.filter(
+            purchase__user=request.user
+        )
+
+    else:
+        recipes_ids = request.session.get('recipe_ids')
+        if recipes_ids is not None:
+            recipes = Recipe.objects.filter(pk__in=recipes_ids)
+        else:
+            recipes = []
     # print(recipes)
     return render(
         request,
         'shop_cart.html',
         {
             'recipes': recipes,
-            }
+        }
     )
 
 
 def delete_purchase(request, recipe_id):
-
-    Purchase.objects.get(id=recipe_id).delete()
+    # Purchase.objects.get(id=recipe_id).delete()
     # recipes = Purchase.objects.filter(user=request.user)
     # return render(request, 'shop_cart.html', {
     #     'recipes': recipes,
@@ -233,27 +219,51 @@ def delete_purchase(request, recipe_id):
 
 def download_purchase(request):
     content = ''
-    # ingredients = RecipeIngredient.objects.filter(
-    #     recipe__in=Recipe.objects.filter(
-    #         purchase__user=request.user
-    #     )
-    # )
-    recipes = Recipe.objects.filter(purchase__user=request.user)
-    ingredients = recipes.order_by('ingredient__title').values(
-        'ingredient__title',
-        'ingredient__dimension').annotate(
-        total_count=Sum('counts__count'))
+    if request.user.is_authenticated:
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__in=Recipe.objects.filter(
+                purchase__user=request.user
+            )
+        )
+    else:
+        # recipes = Recipe.objects.filter(purchase__user=request.user)
+        recipes_ids = request.session.get('recipe_ids')
+        if recipes_ids is not None:
+            recipes = Recipe.objects.filter(pk__in=recipes_ids)
+        ingredients = recipes.order_by('ingredient__title').values(
+            'ingredient__title',
+            'ingredient__dimension').annotate(
+            total_count=Sum('counts__count'))
     # print(recipes)
     for ingredient in ingredients:
         ingredient_str = f'{ingredient["ingredient__title"]} - {ingredient["total_count"]} {ingredient["ingredient__dimension"]}'
         content += f'{ingredient_str}' + '\n'
-    filename = 'recipe_ingredients.txt'
-    response = HttpResponse(content=content, content_type='text/plain')
+    filename = 'recipe_ingredients.pdf'
+    response = HttpResponse(content=content, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename={filename}'
+    buffer = BytesIO()
+    MyFontObject = ttfonts.TTFont('Arial', 'arial.ttf')
+    pdfmetrics.registerFont(MyFontObject)
+    p = canvas.Canvas(buffer, pagesize=A4)
+    p.setFont("Arial", 9)
+    p.drawString(260, 750, 'Список покупок:')
+    x1 = 20
+    y1 = 720
+    for key in ingredients:
+        p.drawString(x1, y1 - 12,
+                     f'{key["ingredient__title"]} - {key["total_count"]} {key["ingredient__dimension"]}')
+        y1 -= 20
+        p.setTitle("Список покупок")
+    p.showPage()
+    p.save()
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
     return response
 
 
 # @cache_page(20)
+@login_required()
 def follow_list(request):
     queryset = request.user.follower.all()
     # active_tags = get_active_tags(request)
@@ -277,11 +287,12 @@ def follow_list(request):
 
 
 # @cache_page(20)
+@login_required()
 def favorite_list(request):
     queryset = Recipe.objects.filter(favorite__user=request.user)
     active_tags = get_active_tags(request)
     if active_tags:
-        queryset = filter_by_tags(queryset, active_tags)
+        queryset = services.filter_by_tags(queryset, active_tags)
 
     paginator = Paginator(queryset, 6)
     page_number = request.GET.get('page')

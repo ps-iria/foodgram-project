@@ -6,6 +6,11 @@ from pytils.translit import slugify
 from recipes.models import Ingredient, RecipeIngredient
 
 
+def filter_by_tags(recipes, tags):
+    """Отфильтровать рецепты по тегам"""
+    return recipes.filter(tags__title__in=tags).distinct()
+
+
 def get_ingredients(request):
     ingredients = {}
     for key, name in request.POST.items():

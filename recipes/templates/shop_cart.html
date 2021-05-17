@@ -19,12 +19,12 @@
             <li class="shopping-list__item" data-id="{{ recipe.id }}">
                 <div class="recipe recipe_reverse">
                     {% load thumbnail %}
-                    {% thumbnail recipe.recipe.image "480x480" as image %}
+                    {% thumbnail recipe.image "480x480" as image %}
                         <img src="{{ image.url }}" alt="какой-то текст" class="recipe__image recipe__image_big">
                     {% endthumbnail %}
-                    <a href="{% url 'recipe' recipe.recipe.id %}"><h3 class="recipe__title">{{ recipe.recipe.title }}</h3></a>
+                    <a href="{% url 'recipe' recipe.id %}"><h3 class="recipe__title">{{ recipe.title }}</h3></a>
 
-                    <p class="recipe__text"><span class="icon-time"></span> {{ recipe.recipe.cook_time }} мин.</p>
+                    <p class="recipe__text"><span class="icon-time"></span> {{ recipe.cook_time }} мин.</p>
                 </div>
                 <a href="{% url 'delete_purchase' recipe.id %}" class="shopping-list__button link">Удалить</a>
             </li>

@@ -1,6 +1,7 @@
 from django import template
 
-from api.models import Favorite
+from api.models import Favorite, Purchase
+from recipes.models import Recipe
 
 register = template.Library()
 
@@ -25,6 +26,11 @@ def count_format(word, count):
 
 
 @register.filter
+def in_purchase(recipe, user):
+    return Purchase.objects.filter(user=user, recipe=recipe).exists()
+
+
+@register.filter
 def is_subscribed(author, user):
     return user.follower.filter(author=author).exists()
 
@@ -36,11 +42,17 @@ def in_favorites(recipe, user):
 
 @register.filter
 def purchase_size(request):
-    recipe_ids = request.session.get('recipe_ids')
-    if recipe_ids is None:
-        return 0
+    if request.user.is_authenticated:
+        recipes = Recipe.objects.filter(
+            purchase__user=request.user
+        ).count()
+        return recipes
     else:
-        return len(recipe_ids)
+        recipe_ids = request.session.get('recipe_ids')
+        if recipe_ids is None:
+            return 0
+        else:
+            return len(recipe_ids)
 
 
 @register.simple_tag

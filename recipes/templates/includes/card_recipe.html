@@ -1,8 +1,9 @@
 {% load tag_filters %}
-<div class="card" data-id="120">
+{% load recipe_filters %}
+<div class="card" data-id="{{ recipe.id }}">
 			{% load thumbnail %}
 			{% thumbnail recipe.image "240" crop="center" upscale=True as im %}
-			<a href="{% url 'recipe' recipe.id %}" class="link" target="_blank"><img src="{{ im.url }}" alt="{{ recipe.tittle }}" class="card__image"></a>
+			<a href="{% url 'recipe_slug' recipe.slug %}" class="link" target="_blank"><img src="{{ im.url }}" alt="{{ recipe.tittle }}" class="card__image"></a>
 			{% endthumbnail %}
 			<div class="card__body">
 				<a class="card__title link" href="{% url 'recipe_slug' recipe.slug %}" target="_blank">{{ recipe.title }}</a>
@@ -19,6 +20,10 @@
 				</div>
 			</div>
 			<div class="card__footer">
-				<button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
+		{% if recipe.id in request.session.recipe_ids or recipe|in_purchase:request.user %}
+            <button class="button button_style_light-blue-outline" name="purchases"><span class="icon-check button__icon"></span>Рецепт добавлен</button>
+        {% else %}
+            <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
+        {% endif %}
 			</div>
 		</div>
