@@ -130,5 +130,6 @@ dmypy.json
 
 # Send_backend_emails
 
+.idea
 sent_emails
 media
