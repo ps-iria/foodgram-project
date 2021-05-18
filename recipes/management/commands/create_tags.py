@@ -21,5 +21,7 @@ class Command(BaseCommand):
             if Tag.objects.filter(display_name=tag.display_name).exists():
                 print(f'{tag.display_name} already exist')
             else:
-                Tag.objects.create(title=tag.title, display_name=tag.display_name, color=tag.color)
+                Tag.objects.create(title=tag.title,
+                                   display_name=tag.display_name,
+                                   color=tag.color)
                 print(f'{tag.display_name} instance created')

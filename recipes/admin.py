@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
+
 from recipes.forms import TagForm
 from recipes.models import Recipe, RecipeIngredient, Ingredient, Tag
 
@@ -7,13 +8,6 @@ from recipes.models import Recipe, RecipeIngredient, Ingredient, Tag
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
     extra = 1
-    # raw_id_fields = ('ingredient',)
-
-
-# class RecipeTagInline(admin.TabularInline):
-#     model = RecipeIngredient
-#     extra = 1
-#     raw_id_fields = ('ingredient',)
 
 
 class RecipeAdmin(admin.ModelAdmin):
@@ -55,8 +49,9 @@ class TagAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': ('title', 'display_name', 'color',)
-            }),
-        )
+        }),
+    )
+
 
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Recipe, RecipeAdmin)

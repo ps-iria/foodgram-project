@@ -1,8 +1,10 @@
-from django.core.management.base import BaseCommand, CommandError
-from recipes.models import Ingredient
 import csv
-from foodgram.settings import BASE_DIR
 import os
+
+from django.core.management.base import BaseCommand
+
+from foodgram.settings import BASE_DIR
+from recipes.models import Ingredient
 
 CSV_FILE_PATH = os.path.join(BASE_DIR, 'ingredients.csv')
 
@@ -15,4 +17,5 @@ class Command(BaseCommand):
             reader = csv.reader(file)
             for row in reader:
                 title, dimension = row
-                Ingredient.objects.get_or_create(title=title, dimension=dimension)
+                Ingredient.objects.get_or_create(title=title,
+                                                 dimension=dimension)

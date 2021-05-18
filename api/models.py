@@ -22,9 +22,10 @@ class Follow(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["user", "author"],
-                                    name="unique_follow"
-                                    )
+            models.UniqueConstraint(
+                fields=["user", "author"],
+                name="unique_follow"
+            )
         ]
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
@@ -49,9 +50,10 @@ class Favorite(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["user", "recipe"],
-                                    name="unique_favorite"
-                                    )
+            models.UniqueConstraint(
+                fields=["user", "recipe"],
+                name="unique_favorite"
+            )
         ]
         verbose_name = "Избранный рецепт"
         verbose_name_plural = "Избранные рецепты"
@@ -76,9 +78,10 @@ class Purchase(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["user", "recipe"],
-                                    name="unique_purchase"
-                                    )
+            models.UniqueConstraint(
+                fields=["user", "recipe"],
+                name="unique_purchase"
+            )
         ]
         verbose_name = "Рецепты (покупка)"
         verbose_name_plural = "Рецепты (покупка)"

@@ -15,9 +15,11 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    id = SlugRelatedField(queryset=User.objects.all(),
-                          slug_field='id',
-                          source='author')
+    id = SlugRelatedField(
+        queryset=User.objects.all(),
+        slug_field='id',
+        source='author'
+    )
 
     user = User.pk
 
@@ -27,9 +29,11 @@ class FollowSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    id = SlugRelatedField(queryset=Recipe.objects.all(),
-                          slug_field='id',
-                          source='recipe')
+    id = SlugRelatedField(
+        queryset=Recipe.objects.all(),
+        slug_field='id',
+        source='recipe'
+    )
     user = User.pk
 
     class Meta:

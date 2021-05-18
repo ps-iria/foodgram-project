@@ -6,25 +6,17 @@ from factory import fuzzy
 from pytils.translit import slugify
 
 from users.factories import UserFactory
-
 from . import models
 from .models import Tag
 
 COLOR = ["red", "blue", "green", "yellow", "purple", "orange", "white",
          "black"]
-TAGS = ["breakfest", "lunch", "dinner"]
-TAGS2 = ["Завтрак", "Обед", "Ужин"]
+TAGS = ["Завтрак", "Обед", "Ужин"]
 
-
-# class RecipeTagFactory(factory.django.DjangoModelFactory):
-#     # title = choice(TAGS)
-#
-#     class Meta:
-#         model = models.Tag
 
 class RelatedObjectFactory(factory.Factory):
     FACTORY_FOR = models.Tag
-    one = choice(TAGS2)
+    one = choice(TAGS)
     related = None
 
 
@@ -32,10 +24,6 @@ class BaseRecipeFactory(factory.django.DjangoModelFactory):
     """Factory that generates Recipes without Ingredients."""
     author = factory.SubFactory(UserFactory)
     title = factory.Faker('word')
-    # print(models.Tag.Meal)
-    # tags = factory.SubFactory(RecipeTagFactory)
-    # tags = factory.Sequence(lambda n: factory.fuzzy.FuzzyChoice(TAGS2))
-    # tags = factory.RelatedFactory(RelatedObjectFactory, 'related', one=choice(TAGS2))
     image = factory.django.ImageField(width=1000,
                                       color=factory.fuzzy.FuzzyChoice(COLOR))
     description = factory.Faker('text')
@@ -54,14 +42,6 @@ class BaseRecipeFactory(factory.django.DjangoModelFactory):
         count_tags = fuzzy.FuzzyInteger(1, 3)
         tags = random.sample(tuple(Tag.objects.all()), count_tags.fuzz())
         self.tags.set(tags)
-        # if not create:
-        #     # Simple build, do nothing.
-        #     return
-        #
-        # if extracted:
-        #     # A list of groups were passed in, use them
-        #     for tag in extracted:
-        #         self.tags.add(tag)
 
 
 class RecipeIngredientFactory(factory.django.DjangoModelFactory):

@@ -164,20 +164,16 @@ def delete_purchase(request, recipe_id):
 def download_purchase(request):
     content = ''
     if request.user.is_authenticated:
-        ingredients = RecipeIngredient.objects.filter(
-            recipe__in=Recipe.objects.filter(
-                purchase__user=request.user
-            )
-        )
+        recipes = Recipe.objects.filter(purchase__user=request.user)
     else:
-        # recipes = Recipe.objects.filter(purchase__user=request.user)
+
         recipes_ids = request.session.get('recipe_ids')
         if recipes_ids is not None:
             recipes = Recipe.objects.filter(pk__in=recipes_ids)
-        ingredients = recipes.order_by('ingredient__title').values(
-            'ingredient__title',
-            'ingredient__dimension').annotate(
-            total_count=Sum('counts__count'))
+    ingredients = recipes.order_by('ingredient__title').values(
+        'ingredient__title',
+        'ingredient__dimension').annotate(
+        total_count=Sum('counts__count'))
     # print(recipes)
     for ingredient in ingredients:
         ingredient_str = f'{ingredient["ingredient__title"]} - {ingredient["total_count"]} {ingredient["ingredient__dimension"]}'

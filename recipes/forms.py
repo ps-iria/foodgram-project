@@ -7,10 +7,6 @@ from recipes.models import Recipe, Tag
 class CreateRecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
-        # exclude = (
-        #     'author',
-        #     'slug'
-        # )
         fields = (
             "title",
             "tags",
