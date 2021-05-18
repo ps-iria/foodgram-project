@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
-from rest_framework.reverse import reverse_lazy
 from django.views.generic import CreateView
+from rest_framework.reverse import reverse_lazy
+
 from .forms import CreationForm
 
 User = get_user_model()

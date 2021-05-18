@@ -2,8 +2,7 @@ from io import BytesIO
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, \
-    InvalidPage
+from django.core.paginator import Paginator
 from django.db import transaction, IntegrityError
 from django.db.models import Sum
 from django.http import HttpResponseBadRequest, HttpResponse
@@ -14,7 +13,7 @@ from reportlab.pdfgen import canvas
 
 from recipes import services
 from recipes.forms import CreateRecipeForm
-from recipes.models import Recipe, RecipeIngredient, Tag
+from recipes.models import Recipe, RecipeIngredient
 
 User = get_user_model()
 
@@ -89,24 +88,20 @@ def recipe_edit(request, recipe_id):
                             files=request.FILES or None,
                             instance=recipe)
     if form.is_valid():
-        # edit_recipe(request, form, instance=recipe)
-
-        #     return redirect("recipe", recipe_id=recipe.id)
-        # return render(request, "new_recipe.html", {
-        #     "form": form,
-        #     "recipe": recipe,
-        #     }
         ingredients = services.get_ingredients(request)
         context = services.validate_ingredients(form, ingredients)
         if context:
             return render(request, 'new_recipe.html', context)
-
-        # form.save_recipe(request)
         services.save_recipe(request, form, ingredients)
         return redirect('index')
-    return render(request, 'new_recipe.html', {'form': form,
-                                               'recipe': recipe}
-                  )
+    return render(
+        request,
+        'new_recipe.html',
+        {
+            'form': form,
+            'recipe': recipe
+        }
+    )
 
 
 @login_required
@@ -135,14 +130,12 @@ def purchase(request):
         recipes = Recipe.objects.filter(
             purchase__user=request.user
         )
-
     else:
         recipes_ids = request.session.get('recipe_ids')
         if recipes_ids is not None:
             recipes = Recipe.objects.filter(pk__in=recipes_ids)
         else:
             recipes = []
-    # print(recipes)
     return render(
         request,
         'shop_cart.html',
@@ -153,11 +146,6 @@ def purchase(request):
 
 
 def delete_purchase(request, recipe_id):
-    # Purchase.objects.get(id=recipe_id).delete()
-    # recipes = Purchase.objects.filter(user=request.user)
-    # return render(request, 'shop_cart.html', {
-    #     'recipes': recipes,
-    # })
     return redirect('purchase')
 
 
@@ -174,9 +162,10 @@ def download_purchase(request):
         'ingredient__title',
         'ingredient__dimension').annotate(
         total_count=Sum('counts__count'))
-    # print(recipes)
     for ingredient in ingredients:
-        ingredient_str = f'{ingredient["ingredient__title"]} - {ingredient["total_count"]} {ingredient["ingredient__dimension"]}'
+        ingredient_str = (f'{ingredient["ingredient__title"]} - '
+                          f'{ingredient["total_count"]} '
+                          f'{ingredient["ingredient__dimension"]}')
         content += f'{ingredient_str}' + '\n'
     filename = 'recipe_ingredients.pdf'
     response = HttpResponse(content=content, content_type='application/pdf')
@@ -190,8 +179,13 @@ def download_purchase(request):
     x1 = 20
     y1 = 720
     for key in ingredients:
-        p.drawString(x1, y1 - 12,
-                     f'{key["ingredient__title"]} - {key["total_count"]} {key["ingredient__dimension"]}')
+        p.drawString(
+            x1,
+            y1 - 12,
+            (f'{key["ingredient__title"]} - '
+             f'{key["total_count"]} '
+             f'{key["ingredient__dimension"]}')
+        )
         y1 -= 20
         p.setTitle("Список покупок")
     p.showPage()
@@ -206,22 +200,15 @@ def download_purchase(request):
 @login_required()
 def follow_list(request):
     queryset = request.user.follower.all()
-    # active_tags = get_active_tags(request)
-    # if active_tags:
-    #     queryset = filter_by_tags(queryset, active_tags)
-
     paginator = Paginator(queryset, 6)
     page_number = request.GET.get('page')
     page = services.pagination(paginator, page_number)
-    # tags = Tag.objects.all()
     return render(
         request,
         "follow.html",
         {
             "page": page,
-            # "tags": tags,
             "paginator": paginator,
-            # 'active_tags': active_tags,
         }
     )
 

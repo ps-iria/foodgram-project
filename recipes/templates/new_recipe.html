@@ -17,25 +17,22 @@
       {% endif %}
     </div>
     <div class="form-container">
-      <form
-          action="{% if recipe %}{% url 'recipe_edit' recipe.pk %}{% else %}{% url 'recipe_new' %}{% endif %}"
-          class="form"
-          enctype="multipart/form-data"
-          method="post">
+      <form action="{% if recipe %}{% url 'recipe_edit' recipe.pk %}{% else %}{% url 'recipe_new' %}{% endif %}"
+            class="form"
+            enctype="multipart/form-data"
+            method="post">
         {% csrf_token %}
         <div class="form__group">
           <label class="form__label" for="{{ form.title.id_for_label }}">{{form.title.label }}</label>
           <div class="form__field-group">
             {{ form.title|add_class:'form__input' }}
             {% if form.title.errors %}
-            <span class="form__error">{{ form.title.errors.as_text|escape }}</span>
+              <span class="form__error">{{ form.title.errors.as_text|escape }}</span>
             {% endif %}
           </div>
         </div>
-
         <div class="form__group">
-          <label class="form__label" for="{{ form.tag.id_for_label }}">{{
-              form.tag.label }}</label>
+          <label class="form__label" for="{{ form.tag.id_for_label }}">{{ form.tags.label }}</label>
           <div class="form__field-group">
             <div class="tags">
               {% if recipe %}

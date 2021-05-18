@@ -4,7 +4,7 @@
     Регистрация
 {% endblock %}
 {% block css %}
-<link rel="stylesheet" href='{% static "pages/form.css" %}'>
+  <link rel="stylesheet" href='{% static "pages/form.css" %}'>
 {% endblock %}
 {% block content %}
   {% load user_filters %}
@@ -25,7 +25,7 @@
                 {% endif %}
               </div>
             </div>
-                {% endfor %}
+          {% endfor %}
           <div class="form__footer">
             <button class="button button_style_blue">Создать аккаунт</button>
           </div>

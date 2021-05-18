@@ -1,5 +1,9 @@
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, \
+from django.core.paginator import (
+    Paginator,
+    PageNotAnInteger,
+    EmptyPage,
     InvalidPage
+)
 from django.db import transaction, IntegrityError
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
@@ -20,6 +24,7 @@ def get_active_tags(request):
 
 
 def get_content(request, queryset):
+    """Получить словарь с данными для страницы"""
     active_tags = get_active_tags(request)
     if active_tags:
         queryset = filter_by_tags(queryset, active_tags)
@@ -54,6 +59,7 @@ def filter_by_tags(recipes, tags):
 
 
 def get_ingredients(request):
+    """Получить список ингредиентов из формы"""
     ingredients = {}
     for key, name in request.POST.items():
         if key.startswith('nameIngredient'):
@@ -109,18 +115,16 @@ def validate_ingredients(form, ingredients):
 
 
 def save_recipe(request, form, ingredients):
+    """Получить список активных тегов для фильтрации рецептов"""
     try:
         with transaction.atomic():
             recipe = form.save(commit=False)
             recipe.author = request.user
-            print(recipe.slug)
             if recipe.slug is None:
                 recipe.slug = slugify(form.cleaned_data['title'])
             recipe.save()
-            # if recipe.ingredient.exists():
             RecipeIngredient.objects.filter(recipe=recipe).delete()
             objs = []
-            ingredients = get_ingredients(request)
             for title, count in ingredients.items():
                 ingredient = get_object_or_404(Ingredient, title=title)
                 objs.append(
@@ -133,6 +137,5 @@ def save_recipe(request, form, ingredients):
             RecipeIngredient.objects.bulk_create(objs)
             form.save_m2m()
             return recipe
-
     except IntegrityError:
         raise HttpResponseBadRequest

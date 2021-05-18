@@ -6,7 +6,7 @@
 			<a href="{% url 'recipe_slug' recipe.slug %}" class="link" target="_blank"><img src="{{ im.url }}" alt="{{ recipe.tittle }}" class="card__image"></a>
 			{% endthumbnail %}
 			<div class="card__body">
-				<a class="card__title link" href="{% url 'recipe_slug' recipe.slug %}" target="_blank">{{ recipe.title }}</a>
+				<a class="card__title link" href="{{ recipe.get_absolute_url }}" target="_blank">{{ recipe.title }}</a>
 				<ul class="card__items">
 					{% for tag in recipe.tags.all %}
 					<li class="card__item"><span style="background: {{ tag.color|hex_to_rgb }};color: {{ tag.color }}" class="badge">{{ tag }}</span></li>

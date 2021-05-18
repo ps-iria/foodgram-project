@@ -8,31 +8,29 @@
 {% endblock %}
 {% block content %}
   {% load recipe_filters %}
-
     <main class="main container">
-        <div class="main__header">
-            <h1 class="main__title">Избранное</h1>
-            {% include "includes/tags.html" %}
-
-        </div>
-        <div class="card-list">
-            {% for recipe in page %}
-              {% include "includes/card_recipe.html" with recipe=recipe %}
-            {% endfor %}
-        </div>
-        {% if page.has_other_pages %}
-		{% include 'includes/pagination.html' with page=page%}
-	{% endif %}
+      <div class="main__header">
+        <h1 class="main__title">Избранное</h1>
+        {% include "includes/tags.html" %}
+      </div>
+      <div class="card-list">
+        {% for recipe in page %}
+          {% include "includes/card_recipe.html" with recipe=recipe %}
+        {% endfor %}
+      </div>
+      {% if page.has_other_pages %}
+        {% include 'includes/pagination.html' with page=page%}
+      {% endif %}
     </main>
 {% endblock content %}
 
 {% block scripts %}
-<script src="{% static 'js/components/MainCards.js' %}"></script>
-<script src="{% static 'js/components/Purchases.js' %}"></script>
-<script src="{% static 'js/components/Favorites.js' %}"></script>
-<script src="{% static 'js/config/config.js' %}"></script>
-<script src="{% static 'js/components/CardList.js' %}"></script>
-<script src="{% static 'js/components/Header.js' %}"></script>
-<script src="{% static 'js/api/Api.js' %}"></script>
-<script src="{% static 'favorite.js' %}"></script>
+  <script src="{% static 'js/components/MainCards.js' %}"></script>
+  <script src="{% static 'js/components/Purchases.js' %}"></script>
+  <script src="{% static 'js/components/Favorites.js' %}"></script>
+  <script src="{% static 'js/config/config.js' %}"></script>
+  <script src="{% static 'js/components/CardList.js' %}"></script>
+  <script src="{% static 'js/components/Header.js' %}"></script>
+  <script src="{% static 'js/api/Api.js' %}"></script>
+  <script src="{% static 'favorite.js' %}"></script>
 {% endblock scripts%}
