@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Send_backend_emails
+
+.idea
+sent_emails
+media

@@ -1,0 +1,29 @@
+{% load tag_filters %}
+{% load recipe_filters %}
+<div class="card" data-id="{{ recipe.id }}">
+			{% load thumbnail %}
+			{% thumbnail recipe.image "240" crop="center" upscale=True as im %}
+			<a href="{% url 'recipe_slug' recipe.slug %}" class="link" target="_blank"><img src="{{ im.url }}" alt="{{ recipe.tittle }}" class="card__image"></a>
+			{% endthumbnail %}
+			<div class="card__body">
+				<a class="card__title link" href="{{ recipe.get_absolute_url }}" target="_blank">{{ recipe.title }}</a>
+				<ul class="card__items">
+					{% for tag in recipe.tags.all %}
+					<li class="card__item"><span style="background: {{ tag.color|hex_to_rgb }};color: {{ tag.color }}" class="badge">{{ tag }}</span></li>
+<!--					<li class="card__item"><span class="badge badge_style_orange">Завтрак</span></li>-->
+<!--					<li class="card__item"><span class="badge badge_style_purple">Ужин</span></li>-->
+					{% endfor %}
+				</ul>
+				<div class="card__items card__items_column">
+					<p class="card__text"><span class="icon-time"></span> {{ recipe.cook_time }} мин.</p>
+					<p class="card__text"><span class="icon-user"></span> <a href="{% url 'profile' recipe.author %}" style="color: #000000">{{ recipe.author }}</a></p>
+				</div>
+			</div>
+			<div class="card__footer">
+		{% if recipe.id in request.session.recipe_ids or recipe|in_purchase:request.user %}
+            <button class="button button_style_light-blue-outline" name="purchases"><span class="icon-check button__icon"></span>Рецепт добавлен</button>
+        {% else %}
+            <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
+        {% endif %}
+			</div>
+		</div>
