@@ -7,7 +7,7 @@ from django.core.paginator import (
 from django.db import transaction, IntegrityError
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
-from pytils.translit import slugify
+from slugify import UniqueSlugify
 
 from recipes.models import Ingredient, RecipeIngredient, Tag
 
@@ -118,10 +118,11 @@ def save_recipe(request, form, ingredients):
     """Получить список активных тегов для фильтрации рецептов"""
     try:
         with transaction.atomic():
+            custom_slugify = UniqueSlugify()
             recipe = form.save(commit=False)
             recipe.author = request.user
             if recipe.slug is None:
-                recipe.slug = slugify(form.cleaned_data['title'])
+                recipe.slug = custom_slugify(form.cleaned_data['title'])
             recipe.save()
             RecipeIngredient.objects.filter(recipe=recipe).delete()
             objs = []

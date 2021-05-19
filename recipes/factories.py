@@ -3,7 +3,7 @@ from random import choice
 
 import factory
 from factory import fuzzy
-from pytils.translit import slugify
+from slugify import UniqueSlugify
 
 from users.factories import UserFactory
 from . import models
@@ -35,7 +35,8 @@ class BaseRecipeFactory(factory.django.DjangoModelFactory):
 
     @factory.lazy_attribute
     def slug(self):
-        return slugify(self.title)
+        custom_slugify = UniqueSlugify()
+        return custom_slugify(self.title)
 
     @factory.post_generation
     def tags(self, create, extracted, **kwargs):
