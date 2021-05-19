@@ -90,18 +90,28 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 #     }
 # }
 DATABASES = {
-
     'default': {
-
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'foodgram',
-        'USER': 'postgres',
-        'PASSWORD': '6397',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'db_name'),
+        'USER': os.environ.get('POSTGRES_USER', 'username'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'pass'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', 5432),
     }
-
 }
+# DATABASES = {
+#
+#     'default': {
+#
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'foodgram',
+#         'USER': 'postgres',
+#         'PASSWORD': '6397',
+#         'HOST': '127.0.0.1',
+#         'PORT': '5432',
+#     }
+#
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
