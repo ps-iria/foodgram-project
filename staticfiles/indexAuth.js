@@ -27,11 +27,11 @@ const configButton = {
     }
 }
 const purchases = new Purchases(configButton.purchases, api);
-// const favorites = new Favorites(configButton.favorites, api);
+const favorites = new Favorites(configButton.favorites, api);
 
 const cardList = new CardList(container, '.card', header, api, true, {
     purchases,
-    // favorites
+    favorites
 });
 
 cardList.addEvent();
