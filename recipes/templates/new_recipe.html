@@ -132,7 +132,7 @@
           <button class="button button_style_blue" type="submit">Создать рецепт</button>
           {% if recipe %}
           <a class="form__ingredient-link"
-             href="{% url 'recipe_delete' recipe.id%}"
+             href="{% url 'recipe_delete' recipe.slug %}"
              style="margin-left: 2.5em">Удалить</a>
           {% endif %}
         </div>

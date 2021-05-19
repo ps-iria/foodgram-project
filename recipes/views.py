@@ -48,18 +48,7 @@ def recipe_new(request):
     return redirect("index")
 
 
-def recipe(request, recipe_id):
-    recipe = get_object_or_404(Recipe, id=recipe_id)
-    return render(
-        request,
-        "recipe.html",
-        {
-            "recipe": recipe,
-        }
-    )
-
-
-def recipe_slug(request, recipe_slug):
+def recipe(request, recipe_slug):
     recipe = get_object_or_404(Recipe, slug=recipe_slug)
     return render(
         request,
@@ -110,7 +99,7 @@ def recipe_delete(request, recipe_id):
     if recipe.author == request.user:
         recipe.delete()
         return redirect("index")
-    return redirect("recipe", recipe_id=recipe.id)
+    return redirect("recipe", recipe_id=recipe.slug)
 
 
 def profile(request, username):
