@@ -69,8 +69,8 @@ def edit_recipe(request, form, instance):
 
 
 @login_required
-def recipe_edit(request, recipe_id):
-    recipe = get_object_or_404(Recipe, id=recipe_id)
+def recipe_edit(request, recipe_slug):
+    recipe = get_object_or_404(Recipe, slug=recipe_slug)
     if recipe.author != request.user:
         return redirect("index")
     form = CreateRecipeForm(request.POST or None,
@@ -94,12 +94,12 @@ def recipe_edit(request, recipe_id):
 
 
 @login_required
-def recipe_delete(request, recipe_id):
-    recipe = get_object_or_404(Recipe, id=recipe_id)
+def recipe_delete(request, recipe_slug):
+    recipe = get_object_or_404(Recipe, slug=recipe_slug)
     if recipe.author == request.user:
         recipe.delete()
         return redirect("index")
-    return redirect("recipe", recipe_id=recipe.slug)
+    return redirect("recipe", recipe_slug=recipe.slug)
 
 
 def profile(request, username):
@@ -164,9 +164,9 @@ def download_purchase(request):
     pdfmetrics.registerFont(MyFontObject)
     p = canvas.Canvas(buffer, pagesize=A4)
     p.setFont("Arial", 9)
-    p.drawString(260, 750, 'Список покупок:')
+    p.drawString(260, 810, 'Список покупок:')
     x1 = 20
-    y1 = 720
+    y1 = 780
     for key in ingredients:
         p.drawString(
             x1,

@@ -18,6 +18,9 @@ class RecipeAdmin(admin.ModelAdmin):
         'author',
         'slug',
     )
+    list_filter = (
+        'title',
+    )
     readonly_fields = ['preview']
     search_fields = (
         'title',
@@ -33,13 +36,13 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'title',
         'dimension'
-
     )
     search_fields = (
         'title',
     )
     list_filter = (
         'dimension',
+        'title',
     )
     empty_value_display = '-пусто-'
 
@@ -55,5 +58,4 @@ class TagAdmin(admin.ModelAdmin):
 
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(RecipeIngredient)
 admin.site.register(Ingredient, IngredientAdmin)

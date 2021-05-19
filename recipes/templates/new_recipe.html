@@ -17,7 +17,7 @@
       {% endif %}
     </div>
     <div class="form-container">
-      <form action="{% if recipe %}{% url 'recipe_edit' recipe.pk %}{% else %}{% url 'recipe_new' %}{% endif %}"
+      <form action="{% if recipe %}{% url 'recipe_edit' recipe.slug %}{% else %}{% url 'recipe_new' %}{% endif %}"
             class="form"
             enctype="multipart/form-data"
             method="post">
@@ -129,11 +129,13 @@
           </div>
         </div>
         <div class="form__footer">
-          <button class="button button_style_blue" type="submit">Создать рецепт</button>
           {% if recipe %}
+          <button class="button button_style_blue" type="submit">Сохранить рецепт</button>
           <a class="form__ingredient-link"
              href="{% url 'recipe_delete' recipe.slug %}"
              style="margin-left: 2.5em">Удалить</a>
+          {% else %}
+            <button class="button button_style_blue" type="submit">Создать рецепт</button>
           {% endif %}
         </div>
       </form>
