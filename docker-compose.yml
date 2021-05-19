@@ -16,6 +16,7 @@ services:
     restart: always
     volumes:
       - static_value:/code/static/
+      - media_files:/var/html/media/
     depends_on:
       - db
     env_file:
@@ -27,7 +28,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx:/etc/nginx/conf.d
+      - ./nginx:/etc/nginx/conf.d/
       - static_value:/var/html/static/
       - media_files:/var/html/media/
     depends_on:
