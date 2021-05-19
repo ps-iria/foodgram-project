@@ -26,7 +26,7 @@
                 <div class="recipe">
                     {% load thumbnail %}
                       {% thumbnail recipe.image "240" crop="center" upscale=True as im %}
-                    <img src="{{ im.url }}" alt="{{ recipe.tittle }}" class="recipe__image">
+                    <img src="{{ im.url }}" alt="{{ recipe.title }}" class="recipe__image">
                     {% endthumbnail %}
                     <h3 class="recipe__title">{{ recipe.title }}</h3>
                     <p class="recipe__text"><span class="icon-time"></span> {{ recipe.cook_time }} мин.</p>

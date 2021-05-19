@@ -34,6 +34,7 @@ class Recipe(models.Model):
     title = models.CharField(
         max_length=250,
         verbose_name='Название рецепта',
+        unique=False,
     )
     pub_date = models.DateTimeField(
         verbose_name="Дата/Время создания",
