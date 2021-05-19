@@ -29,7 +29,7 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - static_value:/var/html/static/
-      - media_files:/var/html/media
+      - media_files:/var/html/media/
     depends_on:
       - web
 
