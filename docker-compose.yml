@@ -15,8 +15,9 @@ services:
     image: psiria/foodgram:latest
     restart: always
     volumes:
-      - static_value:/code/static/
-      - media_files:/var/html/media/
+      - static_files:/code/static
+      - media_files:/code/media
+      - nginx_config:/code/nginx
     depends_on:
       - db
     env_file:
@@ -28,13 +29,14 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx:/etc/nginx/conf.d/
-      - static_value:/var/html/static/
-      - media_files:/var/html/media/
+      - nginx_config:/etc/nginx/conf.d/
+      - static_files:/code/static/
+      - media_files:/code/media/
     depends_on:
       - web
 
 volumes:
   postgres_data:
-  static_value:
+  static_files:
   media_files:
+  nginx_config:
