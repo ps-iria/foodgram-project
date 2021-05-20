@@ -1,3 +1,7 @@
+"""
+Комманда для заполнения БД сгенерированными данными
+python manage.py filldb
+"""
 from random import randint, sample
 
 from django.core.management.base import BaseCommand

@@ -21,8 +21,6 @@ class FollowSerializer(serializers.ModelSerializer):
         source='author'
     )
 
-    user = User.pk
-
     class Meta:
         fields = ('id',)
         model = Follow
@@ -34,7 +32,6 @@ class FavoriteSerializer(serializers.ModelSerializer):
         slug_field='id',
         source='recipe'
     )
-    user = User.pk
 
     class Meta:
         fields = ('id',)

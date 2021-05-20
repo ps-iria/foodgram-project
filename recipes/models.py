@@ -15,13 +15,13 @@ class Ingredient(models.Model):
         verbose_name='Единицы измерения',
     )
 
-    def __str__(self):
-        return f'{self.title}, {self.dimension}'
-
     class Meta:
         ordering = ('title',)
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
+
+    def __str__(self):
+        return f'{self.title}, {self.dimension}'
 
 
 class Recipe(models.Model):
@@ -51,7 +51,7 @@ class Recipe(models.Model):
         blank=True,
         verbose_name='Описание',
     )
-    ingredient = models.ManyToManyField(
+    ingredients = models.ManyToManyField(
         Ingredient,
         through='RecipeIngredient',
         verbose_name='Ингридиенты',
@@ -69,16 +69,16 @@ class Recipe(models.Model):
         unique=True,
     )
 
+    class Meta:
+        ordering = ('-pub_date',)
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse('recipe', kwargs={'recipe_slug': self.slug})
-
-    class Meta:
-        ordering = ('-pub_date',)
-        verbose_name = 'Рецепт'
-        verbose_name_plural = 'Рецепты'
 
 
 class RecipeIngredient(models.Model):

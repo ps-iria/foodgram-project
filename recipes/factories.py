@@ -1,3 +1,6 @@
+"""
+Фабрика для генерации рецепта для заполнения БД тестовыми данным
+"""
 import random
 from random import choice
 

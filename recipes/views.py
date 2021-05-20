@@ -3,22 +3,21 @@ from io import BytesIO
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db import transaction, IntegrityError
 from django.db.models import Sum
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.cache import cache_page
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics, ttfonts
 from reportlab.pdfgen import canvas
 
 from recipes import services
 from recipes.forms import CreateRecipeForm
-from recipes.models import Recipe, RecipeIngredient
+from recipes.models import Recipe
 
 User = get_user_model()
 
 
-# @cache_page(20)
 def recipe_list(request):
     queryset = Recipe.objects.all()
     content = services.get_content(request, queryset)
@@ -59,15 +58,6 @@ def recipe(request, recipe_slug):
     )
 
 
-def edit_recipe(request, form, instance):
-    try:
-        with transaction.atomic():
-            RecipeIngredient.objects.filter(recipe=instance).delete()
-            return services.save_recipe(request, form)
-    except IntegrityError:
-        raise HttpResponseBadRequest
-
-
 @login_required
 def recipe_edit(request, recipe_slug):
     recipe = get_object_or_404(Recipe, slug=recipe_slug)
@@ -80,7 +70,8 @@ def recipe_edit(request, recipe_slug):
         ingredients = services.get_ingredients(request)
         context = services.validate_ingredients(form, ingredients)
         if context:
-            return render(request, 'new_recipe.html', context)
+            return render(request, 'new_recipe.html',
+                          context)
         services.save_recipe(request, form, ingredients)
         return redirect('index')
     return render(
@@ -134,10 +125,6 @@ def purchase(request):
     )
 
 
-def delete_purchase(request, recipe_id):
-    return redirect('purchase')
-
-
 def download_purchase(request):
     content = ''
     if request.user.is_authenticated:
@@ -185,7 +172,6 @@ def download_purchase(request):
     return response
 
 
-# @cache_page(20)
 @login_required()
 def follow_list(request):
     queryset = request.user.follower.all()
@@ -202,7 +188,6 @@ def follow_list(request):
     )
 
 
-# @cache_page(20)
 @login_required()
 def favorite_list(request):
     queryset = Recipe.objects.filter(favorite__user=request.user)

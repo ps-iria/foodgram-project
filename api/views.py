@@ -71,7 +71,7 @@ class FavoritesViewSet(CreateDeleteViewSet):
 
 @api_view(['POST'])
 def add_purchase(request):
-    recipe_id = int(request.data.get('id'))
+    recipe_id = request.data.get('id')
     if recipe_id is None:
         return Response(
             {
@@ -79,6 +79,7 @@ def add_purchase(request):
             },
             status=status.HTTP_404_NOT_FOUND
         )
+    recipe_id = int(recipe_id)
     if request.user.is_authenticated:
         recipe = get_object_or_404(Recipe, pk=recipe_id)
         purchase = Purchase.objects.get_or_create(
@@ -106,7 +107,7 @@ def delete_purchase(request, id):
             return Response({'success': False})
     else:
         try:
-            recipes = request.session['recipe_ids']
+            recipes = list(set(request.session['recipe_ids']))
         except KeyError:
             return Response(data={'success': False},
                             status=status.HTTP_404_NOT_FOUND)

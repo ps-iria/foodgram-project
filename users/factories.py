@@ -1,3 +1,6 @@
+"""
+Фабрика для генерации пользователя для заполнения БД тестовыми данным
+"""
 import factory
 from django.contrib.auth import get_user_model
 

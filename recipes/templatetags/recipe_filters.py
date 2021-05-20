@@ -27,7 +27,7 @@ def count_format(word, count):
 
 @register.filter
 def in_purchase(recipe, user):
-    return Purchase.objects.filter(user=user, recipe=recipe).exists()
+    return user.purchaser.filter(recipe=recipe).exists()
 
 
 @register.filter
@@ -37,7 +37,7 @@ def is_subscribed(author, user):
 
 @register.filter
 def in_favorites(recipe, user):
-    return Favorite.objects.filter(user=user, recipe=recipe).exists()
+    return user.favorite.filter(recipe=recipe).exists()
 
 
 @register.filter
@@ -64,7 +64,7 @@ def activate_tag(current_url, tag):
 
 @register.simple_tag
 def deactivate_tag(request, tags=None, param=''):
-    tags = list(tags)
+    tags = list(set(tags))
     tags.remove(param)
     params = '&'.join(f'tags={tag}' for tag in tags)
     if 'page' in request.GET:
