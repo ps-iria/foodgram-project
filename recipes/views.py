@@ -6,7 +6,6 @@ from django.core.paginator import Paginator
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.cache import cache_page
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics, ttfonts
 from reportlab.pdfgen import canvas

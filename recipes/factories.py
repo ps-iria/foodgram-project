@@ -26,7 +26,7 @@ class RelatedObjectFactory(factory.Factory):
 class BaseRecipeFactory(factory.django.DjangoModelFactory):
     """Factory that generates Recipes without Ingredients."""
     author = factory.SubFactory(UserFactory)
-    title = factory.Faker('sentence', nb_words=3)
+    title = factory.Faker('sentence', nb_words=4)
     image = factory.django.ImageField(width=1000,
                                       color=factory.fuzzy.FuzzyChoice(COLOR))
     description = factory.Faker('text')

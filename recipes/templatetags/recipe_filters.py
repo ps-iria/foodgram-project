@@ -1,6 +1,5 @@
 from django import template
 
-from api.models import Favorite, Purchase
 from recipes.models import Recipe
 
 register = template.Library()

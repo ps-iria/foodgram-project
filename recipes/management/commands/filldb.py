@@ -11,9 +11,9 @@ from recipes.factories import RecipeFactory
 from recipes.models import Recipe, User
 from users.factories import UserFactory
 
-USERS = 100
-MAX_RECIPES = 20
-MAX_FAVORITES = 10
+USERS = 50
+MAX_RECIPES = 5
+MAX_FAVORITES = 5
 
 
 class Command(BaseCommand):
