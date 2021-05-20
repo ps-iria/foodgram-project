@@ -133,14 +133,14 @@ def download_purchase(request):
         recipes_ids = request.session.get('recipe_ids')
         if recipes_ids is not None:
             recipes = Recipe.objects.filter(pk__in=recipes_ids)
-    ingredients = recipes.order_by('ingredient__title').values(
-        'ingredient__title',
-        'ingredient__dimension').annotate(
+    ingredients = recipes.order_by('ingredients__title').values(
+        'ingredients__title',
+        'ingredients__dimension').annotate(
         total_count=Sum('counts__count'))
     for ingredient in ingredients:
-        ingredient_str = (f'{ingredient["ingredient__title"]} - '
+        ingredient_str = (f'{ingredient["ingredients__title"]} - '
                           f'{ingredient["total_count"]} '
-                          f'{ingredient["ingredient__dimension"]}')
+                          f'{ingredient["ingredients__dimension"]}')
         content += f'{ingredient_str}' + '\n'
     filename = 'recipe_ingredients.pdf'
     response = HttpResponse(content=content, content_type='application/pdf')
@@ -157,9 +157,9 @@ def download_purchase(request):
         p.drawString(
             x1,
             y1 - 12,
-            (f'{key["ingredient__title"]} - '
+            (f'{key["ingredients__title"]} - '
              f'{key["total_count"]} '
-             f'{key["ingredient__dimension"]}')
+             f'{key["ingredients__dimension"]}')
         )
         y1 -= 20
         p.setTitle("Список покупок")
