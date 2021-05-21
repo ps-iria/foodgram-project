@@ -22,6 +22,13 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
+INTERNAL_IPS = [
+    "84.201.179.99",
+    "iria.tk",
+    "www.iria.tk",
+    "127.0.0.1",
+]
+
 # Application definition
 
 INSTALLED_APPS = [
