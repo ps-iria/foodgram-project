@@ -9,7 +9,7 @@ from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from slugify import UniqueSlugify
 
-from recipes.models import Ingredient, RecipeIngredient, Tag
+from recipes.models import Ingredient, RecipeIngredient, Tag, Recipe
 
 TAGS = ["Завтрак", "Обед", "Ужин"]
 
@@ -122,7 +122,14 @@ def save_recipe(request, form, ingredients):
             recipe = form.save(commit=False)
             recipe.author = request.user
             if recipe.slug is None:
-                recipe.slug = custom_slugify(form.cleaned_data['title'])
+                slug = custom_slugify(form.cleaned_data['title'])
+                slug_count = Recipe.objects.filter(
+                    slug__startswith=slug
+                ).count()
+                if slug_count > 0:
+                    recipe.slug = f'{slug}-{slug_count}'
+                else:
+                    recipe.slug = slug
             recipe.save()
             RecipeIngredient.objects.filter(recipe=recipe).delete()
             objs = []

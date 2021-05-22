@@ -142,32 +142,9 @@ def download_purchase(request):
                           f'{ingredient["total_count"]} '
                           f'{ingredient["ingredients__dimension"]}')
         content += f'{ingredient_str}' + '\n'
-    filename = 'recipe_ingredients.pdf'
-    response = HttpResponse(content=content, content_type='application/pdf')
+    filename = 'recipe_ingredients.txt'
+    response = HttpResponse(content=content, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename={filename}'
-    buffer = BytesIO()
-    MyFontObject = ttfonts.TTFont('Arial', 'arial.ttf')
-    pdfmetrics.registerFont(MyFontObject)
-    p = canvas.Canvas(buffer, pagesize=A4)
-    p.setFont("Arial", 9)
-    p.drawString(260, 810, 'Список покупок:')
-    x1 = 20
-    y1 = 780
-    for key in ingredients:
-        p.drawString(
-            x1,
-            y1 - 12,
-            (f'{key["ingredients__title"]} - '
-             f'{key["total_count"]} '
-             f'{key["ingredients__dimension"]}')
-        )
-        y1 -= 20
-        p.setTitle("Список покупок")
-    p.showPage()
-    p.save()
-    pdf = buffer.getvalue()
-    buffer.close()
-    response.write(pdf)
     return response
 
 

@@ -92,9 +92,7 @@
               {% endif %}
             </div>
             <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
-            {% if form.ingredient.errors %}
-            <span class="form__error">{{ form.ingredient.errors.as_text|escape }}</span>
-            {% endif %}
+            <span class="form__error">{{ ingr_error }}</span>
           </div>
         </div>
 
